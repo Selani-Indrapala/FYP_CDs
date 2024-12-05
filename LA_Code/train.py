@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import toml
 from tqdm import tqdm
 
-from ASV_Data.audio_dataset import AudioDataset  # Import the custom dataset class
+from audio_dataset import AudioDataset  # Import the custom dataset class
 
 import numpy as np
 from sklearn.metrics import confusion_matrix
