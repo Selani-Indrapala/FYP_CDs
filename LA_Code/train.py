@@ -217,7 +217,7 @@ for epoch in range(start_epoch, epochs):
     print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Train Accuracy: {train_accuracy * 100:.2f}%")
     
     # Evaluation phase
-    if (epoch + 1) % 20 == 0:
+    if (epoch + 1) % 1 == 0:
         min_tDCF, optimal_threshold = evaluate(model, val_loader, device)
 
         if min_tDCF <= min_tDCF_best:
