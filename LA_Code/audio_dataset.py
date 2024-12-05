@@ -8,7 +8,8 @@ from scipy.signal import convolve
 class AudioDataset(Dataset):
     def __init__(self, flac_folder, labels_file, transform=None):
         self.flac_folder = flac_folder
-        self.labels = self._load_labels(labels_file)
+        self.labels = {} 
+        self._load_labels(labels_file)
         self.transform = transform
         self.filenames = [f for f in os.listdir(flac_folder) if f.endswith(".flac")]
 
