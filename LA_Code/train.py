@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Load configuration from config.toml
-config = toml.load('configs\BaseModel.toml')
+config = toml.load('/kaggle/working/FYP_CDs/LA_Code/configs/BaseModel.toml')
 
 # Extract model and training parameters
 input_dim = config['model']['input_dim']
