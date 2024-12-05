@@ -20,7 +20,7 @@ class AudioDataset(Dataset):
                 parts = line.strip().split()  # Split the line into elements
                 if len(parts) >= 5:  # Ensure there are enough elements in the line
                     audioname = parts[1]  # The second element
-                    label = parts[4]      # The last element (bonafide/spoof)
+                    label = 1 if parts[4] == 'spoof' else 0  # 1 for spoof, 0 for bonafide
                     self.labels[audioname] = label
 
     def __len__(self):
@@ -102,13 +102,3 @@ class AudioDataset(Dataset):
         CD = CD[lh:-lh, :]
         CD = CD[::24]
         return CD
-
-    def load_labels(self, labels_file):
-        labels = {}
-        with open(labels_file, 'r') as file:
-            for line in file:
-                parts = line.strip().split()
-                filename = parts[0].split('.')[0]
-                label = 1 if parts[1] == 'spoof' else 0  # 1 for spoof, 0 for bonafide
-                labels[filename] = label
-        return labels
