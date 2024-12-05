@@ -183,7 +183,7 @@ for epoch in range(start_epoch, epochs):
     with tqdm(total=len(train_loader), desc=f"Epoch {epoch+1}/{epochs}") as pbar:
         for sample in train_loader:
             inputs = sample['features']
-            if inputs.shape[1]>=5147:
+            if inputs.shape[1]>=8000:
                 print(inputs.shape[1])
             labels = sample['label']
 
