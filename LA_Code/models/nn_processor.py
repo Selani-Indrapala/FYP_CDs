@@ -15,6 +15,7 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
+        device = x.device
         seq_len = x.size(0)
         if seq_len > self.max_len:
             # Reinitialize positional encoding if the sequence length exceeds max_len
@@ -27,7 +28,7 @@ class PositionalEncoding(nn.Module):
             pe = pe.unsqueeze(0).transpose(0, 1)
             self.register_buffer('pe', pe)
 
-        x = x + self.pe[:x.size(0), :]
+        x = x + self.pe[:x.size(0), :].to(device)
         return x
 
 class AudioDeepfakeTransformer(nn.Module):
