@@ -88,7 +88,7 @@ class AudioDataset(Dataset):
         
         # Load impulse responses (if needed per sample)
         for k in range(deg + 1):
-            imp[:, k] = np.flipud(np.loadtxt(f'0.885_0.985_1.00_129/legendre_0.885_0.985_1.00_129_{k}.txt')) / 1e15
+            imp[:, k] = np.flipud(np.loadtxt(f'/kaggle/working/FYP_CDs/LA_Code/FilterBank/legendre_0.885_0.985_1.00_129_{k}.txt')) / 1e15
         
         N = len(sig_sec) // 2
         sig_in = np.concatenate([np.zeros(lh // 2 + 1), sig_sec, np.zeros(lh // 2 + 1)])
