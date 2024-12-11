@@ -48,19 +48,24 @@ train_dataset = AudioDataset(flac_train_folder, train_labels)
 val_dataset = AudioDataset(flac_val_folder, val_labels)  # For validation, you can define a separate folder for val data if needed
 
 def custom_collate_fn(batch):
-    # Separate inputs and labels
-    inputs, labels = zip(*batch)
+    # Separate inputs and labels from the batch of dictionaries
+    inputs = [sample['features'] for sample in batch]
+    labels = [sample['label'] for sample in batch]
     
-    # Find the maximum length in the batch
+    # Ensure inputs are tensors (not strings or other types)
+    assert all(isinstance(input, torch.Tensor) for input in inputs), "Inputs must be tensors, not strings"
+    
+    # Find the maximum length in the batch (based on input size)
     max_len = max(input.size(0) for input in inputs)
     
     # Pad each input to the maximum length
-    padded_inputs = torch.zeros(len(inputs), max_len, inputs[0].size(1))  # Assuming 2D tensors
+    padded_inputs = torch.zeros(len(inputs), max_len, inputs[0].size(1))  # Assuming 2D tensors (e.g., [time, feature])
     for i, input in enumerate(inputs):
         padded_inputs[i, :input.size(0), :] = input  # Copy input into padded tensor
     
     # Convert labels to a tensor
     labels = torch.tensor(labels)
+    
     return padded_inputs, labels
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=custom_collate_fn)
