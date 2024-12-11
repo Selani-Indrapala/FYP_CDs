@@ -202,10 +202,10 @@ for epoch in range(start_epoch, epochs):
     # Initialize tqdm progress bar
     with tqdm(total=len(train_loader), desc=f"Epoch {epoch+1}/{epochs}") as pbar:
         for sample in train_loader:
-            inputs = sample['features']
+            inputs = sample[0]
             if inputs.shape[1]>8792:
                 print(inputs.shape[1])
-            labels = sample['label']
+            labels = sample[1]
 
             # Send to device
             inputs, labels = inputs.to(device), labels.to(device).float()
