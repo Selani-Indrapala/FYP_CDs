@@ -55,32 +55,32 @@ class AudioDataset(Dataset):
         chroma_features = self.get_CDs(audio_data)
         return chroma_features
 
-    def chroma_derivatives(self, sig):
-        deg = 47  # Chromatic derivative degree
-        half_deg = (deg+1)//2
+    # def chroma_derivatives(self, sig):
+    #     deg = 47  # Chromatic derivative degree
+    #     half_deg = (deg+1)//2
 
-        for i in range(half_deg):
-            sample_len = half_deg - i
-            if sample_len == 20:
-                rem = sig.shape[0] % sample_len
-                trim_each_side = rem // 2
-                sig = sig[trim_each_side: sig.shape[0] - (rem - trim_each_side)]
-                #print(f'New signal length: {len(sig)}')
+    #     for i in range(half_deg):
+    #         sample_len = half_deg - i
+    #         if sample_len == 20:
+    #             rem = sig.shape[0] % sample_len
+    #             trim_each_side = rem // 2
+    #             sig = sig[trim_each_side: sig.shape[0] - (rem - trim_each_side)]
+    #             #print(f'New signal length: {len(sig)}')
 
-            if sig.shape[0] % sample_len == 0:
-                break
+    #         if sig.shape[0] % sample_len == 0:
+    #             break
 
-        # print('Samples per window:', sample_len)
-        # print('Number of windows:', len(sig) // sample_len)
+    #     # print('Samples per window:', sample_len)
+    #     # print('Number of windows:', len(sig) // sample_len)
 
-        num_samples = len(sig) // sample_len
-        CD_array = np.zeros((num_samples, deg + 1))
+    #     num_samples = len(sig) // sample_len
+    #     CD_array = np.zeros((num_samples, deg + 1))
 
-        for i in range(num_samples):
-            sig_sec = sig[i * sample_len: (i + 1) * sample_len]
-            CD_array[i, :] = self.get_CDs(sig_sec)
+    #     for i in range(num_samples):
+    #         sig_sec = sig[i * sample_len: (i + 1) * sample_len]
+    #         CD_array[i, :] = self.get_CDs(sig_sec)
 
-        return CD_array
+    #     return CD_array
 
     def get_CDs(self, sig_sec):
         deg = 47
@@ -101,4 +101,11 @@ class AudioDataset(Dataset):
 
         CD = CD[lh:-lh, :]
         CD = CD[::24]
+
+        # Ensure CD has 5147 rows by padding with zeros if necessary
+        target_rows = 8792
+        current_rows, cols = CD.shape
+        if current_rows < target_rows:
+            padding = np.zeros((target_rows - current_rows, cols))
+            CD = np.vstack((CD, padding))
         return CD
