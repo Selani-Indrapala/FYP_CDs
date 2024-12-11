@@ -47,20 +47,6 @@ val_labels = '/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protoc
 train_dataset = AudioDataset(flac_train_folder, train_labels)
 val_dataset = AudioDataset(flac_val_folder, val_labels)  # For validation, you can define a separate folder for val data if needed
 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=custom_collate_fn)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, collate_fn=custom_collate_fn)
-
-def load_checkpoint(model, optimizer, checkpoint_path):
-    checkpoint = torch.load(checkpoint_path)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    start_epoch = checkpoint['epoch']
-    losses = checkpoint.get('losses', [])
-    min_tDCF_best = checkpoint.get('min_tDCF_best', float('inf'))  # Default to infinity if not found
-    optimal_threshold_best = checkpoint.get('optimal_threshold', None) 
-    print(f"Checkpoint loaded. Resuming training from epoch {start_epoch}.")
-    return start_epoch, losses, min_tDCF_best, optimal_threshold_best
-
 def custom_collate_fn(batch):
     # Separate inputs and labels
     inputs, labels = zip(*batch)
@@ -76,6 +62,20 @@ def custom_collate_fn(batch):
     # Convert labels to a tensor
     labels = torch.tensor(labels)
     return padded_inputs, labels
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=custom_collate_fn)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, collate_fn=custom_collate_fn)
+
+def load_checkpoint(model, optimizer, checkpoint_path):
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    start_epoch = checkpoint['epoch']
+    losses = checkpoint.get('losses', [])
+    min_tDCF_best = checkpoint.get('min_tDCF_best', float('inf'))  # Default to infinity if not found
+    optimal_threshold_best = checkpoint.get('optimal_threshold', None) 
+    print(f"Checkpoint loaded. Resuming training from epoch {start_epoch}.")
+    return start_epoch, losses, min_tDCF_best, optimal_threshold_best
     
 # Evaluation function
 def compute_min_tDCF_and_threshold(scores, labels):
