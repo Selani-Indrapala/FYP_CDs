@@ -47,8 +47,8 @@ val_labels = '/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protoc
 train_dataset = AudioDataset(flac_train_folder, train_labels)
 val_dataset = AudioDataset(flac_val_folder, val_labels)  # For validation, you can define a separate folder for val data if needed
 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=custom_collate_fn)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, collate_fn=custom_collate_fn)
 
 def load_checkpoint(model, optimizer, checkpoint_path):
     checkpoint = torch.load(checkpoint_path)
@@ -61,8 +61,23 @@ def load_checkpoint(model, optimizer, checkpoint_path):
     print(f"Checkpoint loaded. Resuming training from epoch {start_epoch}.")
     return start_epoch, losses, min_tDCF_best, optimal_threshold_best
 
+def custom_collate_fn(batch):
+    # Separate inputs and labels
+    inputs, labels = zip(*batch)
+    
+    # Find the maximum length in the batch
+    max_len = max(input.size(0) for input in inputs)
+    
+    # Pad each input to the maximum length
+    padded_inputs = torch.zeros(len(inputs), max_len, inputs[0].size(1))  # Assuming 2D tensors
+    for i, input in enumerate(inputs):
+        padded_inputs[i, :input.size(0), :] = input  # Copy input into padded tensor
+    
+    # Convert labels to a tensor
+    labels = torch.tensor(labels)
+    return padded_inputs, labels
+    
 # Evaluation function
-
 def compute_min_tDCF_and_threshold(scores, labels):
     """
     Compute the minimum t-DCF and the optimal threshold for classification.
