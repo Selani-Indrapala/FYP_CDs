@@ -4,9 +4,6 @@ import numpy as np
 import librosa
 from torch.utils.data import Dataset
 from scipy.signal import convolve
-import time
-
-overall_start = time.time()
 
 class AudioDataset(Dataset):
     def __init__(self, flac_folder, labels_file, transform=None):
@@ -36,13 +33,9 @@ class AudioDataset(Dataset):
         file_path = os.path.join(self.flac_folder, filename)
         
         # Load the audio data
-        start = time.time()
         audio_data, _ = librosa.load(file_path, sr=None)  # sr=None keeps original sampling rate
-        print(f"Loaded audio file in {time.time() - start:.2f} seconds")
         # Extract features (chromatic derivatives)
-        start = time.time()
         features = self.feature_extraction(audio_data)
-        print(f"Feature extraction completed in {time.time() - start:.2f} seconds")
 
         features_tensor = torch.tensor(features, dtype=torch.float32)
         # Get the label
